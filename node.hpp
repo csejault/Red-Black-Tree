@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/03/29 17:09:02 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/04 11:52:58 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -32,7 +32,7 @@
 # include <iostream>
 //define - END}
 
-template < typename T >
+template < class T >
 class	node {
 
 	public:

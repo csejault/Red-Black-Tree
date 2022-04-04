@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/03/29 17:18:45 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/04 12:11:47 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -30,23 +30,28 @@
 # endif
 
 # include <iostream>
+# include <memory>
 # include "node.hpp"
-template < typename T >
+template < class T >
 class node;
 //define - END}
 
-template < typename T >
+template < class T, class Allocator = std::allocator<typename node<T>::node_type>>
 class	rbt {
 	public:
 		enum	t_color {
 			BLACK = 0,
 			RED
 		};
+		typedef Allocator	allocator_type;
 		typedef	typename node<T>::node_type		node_type;
 		typedef	typename node<T>::nd			nd;
 		typedef	typename node<T>::value_type	value_type;
 		//pub_constructor{
-		rbt( void ) : t_null(new node_type(0)), root(t_null) {}
+		rbt(const allocator_type& alloc_arg = allocator_type()) : _alloc(alloc_arg)  {
+			t_null = create_node(node_type(0));
+			root = t_null;
+		}
 		~rbt( void ) { 
 			delete_tree(root);
 			delete_node(t_null);
@@ -83,12 +88,21 @@ class	rbt {
 		//pub_fct{
 		void	delete_node(nd to_dell)
 		{
-			delete to_dell;
+			_alloc.destroy(to_dell);
+			_alloc.deallocate(to_dell, 1);
+		}
+
+		nd	create_node(node_type	value)
+		{
+			nd	ret;
+			ret = _alloc.allocate(1);
+			_alloc.construct(ret, value);
+			return (ret);
 		}
 
 		void	add_node(value_type k)
 		{
-			nd n = new node_type(&t_null,k);
+			nd n = create_node(node_type(&t_null,k));
 			t_insert(n);
 		}
 
@@ -401,8 +415,6 @@ class	rbt {
 		//pub_fct - END}
 
 		//pub_var{
-		nd		t_null;
-		nd		root;
 		//pub_var - END}
 
 	private:
@@ -416,6 +428,9 @@ class	rbt {
 		//priv_static - END}
 
 		//priv_var{
+		allocator_type	_alloc;
+		nd				t_null;
+		nd				root;
 		//priv_var - END}
 };
 
