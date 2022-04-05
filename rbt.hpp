@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/05 16:24:52 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/05 19:14:27 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -38,7 +38,7 @@ template < class T >
 class node;
 //define - END}
 
-template < class T, class Allocator = std::allocator<typename node<T>::node_type>>
+template < class T, class Allocator = std::allocator<typename node<T>::node_type>, class Compare = std::less<node<T>>>
 class	rbt {
 	public:
 		enum	t_color {
@@ -49,18 +49,21 @@ class	rbt {
 		typedef	value_type *							pointer;
 		typedef	value_type &							reference;
 		typedef Allocator								allocator_type;
+		typedef Compare									compare_type;
 		typedef	typename node<T>::node_type				node_type;
 		typedef	typename node<T>::node_pointer			node_pointer;
 		typedef typename rbt_iterator<T>::iterator		iterator;
+		typedef size_t											size_type;
 
 		//pub_constructor{
 		rbt(const allocator_type& alloc_arg = allocator_type()) : _alloc(alloc_arg)  {
-			t_null = create_node(node_type(0));
+			_size = 0;
+			t_null = create_node(node_type());
 			root = t_null;
 		}
 		~rbt( void ) { 
 			delete_tree(root);
-			delete_node(t_null);
+			deallocate_node(t_null);
 		}
 
 		//pub_constructor - END}
@@ -76,6 +79,18 @@ class	rbt {
 		//pub_static - END}
 
 		//pub_getter{
+
+		size_type	size( void )
+		{
+			//-1 because t_null is created by create node
+			return (_size);
+		}
+
+		node_pointer	get_t_null( void )
+		{
+			return (t_null);
+		}
+
 		//pub_getter - END}
 
 		//pub_setter{
@@ -92,7 +107,17 @@ class	rbt {
 		//pub_exception - END}
 
 		//pub_fct{
-		void	delete_node(node_pointer to_dell)
+		node_pointer	minimum( void )
+		{
+			return(root->minimum());
+		}
+
+		node_pointer	maximum( void )
+		{
+			return(root->maximum());
+		}
+
+		void	deallocate_node(node_pointer to_dell)
 		{
 			_alloc.destroy(to_dell);
 			_alloc.deallocate(to_dell, 1);
@@ -106,10 +131,22 @@ class	rbt {
 			return (ret);
 		}
 
-		void	add_node(value_type k)
+		void	insert_node(value_type k)
 		{
 			node_pointer n = create_node(node_type(t_null,k));
 			t_insert(n);
+			_size++;
+		}
+
+		void	delete_node(value_type k)
+		{
+			node_pointer n = search(root,k);
+			if (n != t_null)
+			{
+				t_delete(n);
+				deallocate_node(n);
+				_size--;
+			}
 		}
 
 		void	delete_tree( node_pointer p )
@@ -118,7 +155,7 @@ class	rbt {
 			{
 				delete_tree(p->left);
 				delete_tree(p->right);
-				delete_node(p);
+				deallocate_node(p);
 			}
 		}
 
@@ -312,7 +349,8 @@ class	rbt {
 		void	t_delete(node_pointer z)
 		{
 			node_pointer y = z;
-			node_pointer x = NULL;
+			node_pointer x = t_null;
+			//node_pointer x = NULL;
 			bool y_original_color = y->color;
 			if (z->left == t_null)
 			{
@@ -344,12 +382,12 @@ class	rbt {
 					t_delete_fixup(x);
 			}
 			//?
-			delete_node(z);
 		}
 
 		void	t_delete_fixup(node_pointer x)
 		{
-			node_pointer w = NULL;
+			node_pointer w = t_null;
+			//node_pointer w = NULL;
 			while (x != root && x->color == BLACK)
 			{
 				if (x == x->p->left)
@@ -435,8 +473,9 @@ class	rbt {
 
 		//priv_var{
 		allocator_type	_alloc;
-		node_pointer				t_null;
-		node_pointer				root;
+		node_pointer	t_null;
+		node_pointer	root;
+		size_type		_size;
 		//priv_var - END}
 };
 

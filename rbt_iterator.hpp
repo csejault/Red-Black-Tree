@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 12:03:05 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/05 16:15:40 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/05 18:54:49 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@ class	rbt_iterator
 		typedef const value_type *							const_pointer;
 		typedef const value_type &							const_reference;
 		typedef std::bidirectional_iterator_tag 			iterator_category;
-		typedef std::ptrdiff_t								difference_type;
+		//typedef std::ptrdiff_t								difference_type;
 		typedef	typename node<T>::node_type					node_type;
 		typedef	typename node<T>::node_pointer				node_pointer;
-		typedef	typename node<T>::node_reference			node_reference;
-		typedef	typename node<T>::const_node_pointer		const_node_pointer;
-		typedef	typename node<T>::const_node_reference		const_node_reference;
+		//typedef	typename node<T>::node_reference			node_reference;
+		//typedef	typename node<T>::const_node_pointer		const_node_pointer;
+		//typedef	typename node<T>::const_node_reference		const_node_reference;
 		typedef rbt_iterator<T>								iterator;
 
 		rbt_iterator( node_pointer nd ) :_ptr(nd) {}
@@ -67,29 +67,44 @@ class	rbt_iterator
 			return (_ptr->operator*());
 		}
 
-		rbt_iterator &	operator++(void) {
+		rbt_iterator &	operator++(void)
+		{
 			_ptr = _ptr->successor();
 			return (*this);
 		}
 
-		rbt_iterator	operator++(int) {
+		rbt_iterator	operator++(int)
+		{
 			rbt_iterator tmp(*this);
 			_ptr = _ptr->successor();
 			return (tmp);
 		}
-		rbt_iterator &	operator--(void) {
+
+		rbt_iterator &	operator--(void)
+		{
 			_ptr = _ptr->predecessor();
 			return (*this);
 		}
 
-		rbt_iterator	operator--(int) {
+		rbt_iterator	operator--(int)
+		{
 			rbt_iterator tmp(*this);
 			_ptr = _ptr->predecessor();
 			return (tmp);
 		}
 
-	private:
-		node_pointer _ptr;
-};
+		bool	operator==(rbt_iterator const &rhs) const
+		{
+			return (_ptr == rhs._ptr);
+		}
+
+		bool	operator!=(rbt_iterator const &rhs) const
+		{
+			return (_ptr != rhs._ptr);
+		}
+
+			private:
+			node_pointer _ptr;
+		};
 
 #endif

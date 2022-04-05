@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/05 16:31:44 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/05 19:18:04 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -40,7 +40,7 @@ class	node {
 		};
 
 		//pub_constructor{
-		node(value_type k) : color(BLACK), p(NULL), left(NULL), right(NULL), key(k) {} //used to create t_null
+		node( void ) : color(BLACK), p(NULL), left(NULL), right(NULL) {} //used to create t_null -- unitisialized key
 		node(node_pointer& t_null, value_type k) :color(RED), tree_null(t_null), p(t_null), left(t_null), right(t_null), key(k) {} //used to create node
 		~node( void ) {
 		}
@@ -86,7 +86,7 @@ class	node {
 
 		//pub_fct{
 		void	print_key( void ) {
-			std::cout << key << std::endl;
+			std::cout << key.first << " = " << key.second << std::endl;
 		}
 
 		node_pointer	minimum( void )
@@ -118,10 +118,9 @@ class	node {
 
 		node_pointer predecessor(node_pointer n)
 		{
-			node_pointer s = NULL;
 			if (n->left != tree_null)
 				return (n->left->minimum());
-			s = n->p;
+			node_pointer s = n->p;
 			while(s != tree_null && n == s->left)
 			{
 				n = s;
@@ -132,10 +131,9 @@ class	node {
 
 		node_pointer successor(node_pointer n)
 		{
-			node_pointer s = NULL;
 			if (n->right != tree_null)
 				return (n->right->minimum());
-			s = n->p;
+			node_pointer s = n->p;
 			while(s !=tree_null && n == s->right)
 			{
 				n = s;
@@ -159,7 +157,6 @@ class	node {
 		//priv_debug - END}
 
 		//priv_constructor{
-		node( void ) {};
 		//priv_constructor - END}
 
 		//priv_static{
