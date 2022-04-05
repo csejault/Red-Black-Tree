@@ -1,4 +1,5 @@
 #include "rbt.hpp"
+#include "rbt_iterator.hpp"
 
 int main( void )
 {
@@ -26,6 +27,17 @@ int main( void )
 	tree->t_delete(tree->search(15));
 	tree->inorder_walk();
 	//tree->inorder_walk();
+	std::cout << std::endl;
+
+	rbt<int>::node_pointer ptr = tree->search(1);
+	for (rbt<int>::iterator it(ptr); it != tree->search(15); it++)
+	{
+		*it = *it *2;
+		std::cout << "new it = " <<  *it << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << std::endl;
+	tree->inorder_walk();
 	delete tr;
 	delete tree;
 	return (0);

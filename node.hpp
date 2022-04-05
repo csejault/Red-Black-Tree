@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/04 11:52:58 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/05 16:31:44 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -15,20 +15,6 @@
 //define{
 #ifndef NODE_HPP
 # define NODE_HPP
-
-# ifndef COL_GREEN
-#  define COL_GREEN 		"\033[0;32m"
-# endif
-# ifndef COL_RED
-#  define COL_RED		"\033[0;31m"
-# endif
-# ifndef COL_YELLOW
-#  define COL_YELLOW		"\033[0;33m"
-# endif
-# ifndef COL_NORMAL
-#  define COL_NORMAL		"\033[0m"
-# endif
-
 # include <iostream>
 //define - END}
 
@@ -36,24 +22,51 @@ template < class T >
 class	node {
 
 	public:
+
+		typedef T						value_type;
+		typedef T*						pointer;
+		typedef T&						reference;
+		typedef const T*				const_pointer;
+		typedef const T&				const_reference;
+		typedef node<T> 				node_type;
+		typedef node_type* 				node_pointer;
+		typedef node_type& 				node_reference;
+		typedef const node_type* 		const_node_pointer;
+		typedef const node_type&	 	const_node_reference;
+
 		enum	t_color {
 			BLACK = 0,
 			RED
 		};
-		typedef node<T> 	node_type;
-		typedef node_type* 	nd;
-		typedef T			value_type;
-		typedef T*			pointer;
-		typedef T&			reference;
 
 		//pub_constructor{
 		node(value_type k) : color(BLACK), p(NULL), left(NULL), right(NULL), key(k) {} //used to create t_null
-		node(nd* t_null, value_type k) : color(RED), p(*t_null), left(*t_null), right(*t_null), key(k) {} //used to create node
+		node(node_pointer& t_null, value_type k) :color(RED), tree_null(t_null), p(t_null), left(t_null), right(t_null), key(k) {} //used to create node
 		~node( void ) {
 		}
 		//pub_constructor - END}
 
 		//pub_operator{
+		pointer	operator->( void )
+		{
+			return (&key);
+		}
+
+		const_pointer	operator->( void ) const
+		{
+			return (&key);
+		}
+
+		reference	operator*( void )
+		{
+			return (key);
+		}
+
+		const_reference	operator*( void ) const
+		{
+			return (key);
+		}
+
 		//pub_operator - END}
 
 		//pub_debug{
@@ -75,30 +88,41 @@ class	node {
 		void	print_key( void ) {
 			std::cout << key << std::endl;
 		}
-		nd	minimum( void )
+
+		node_pointer	minimum( void )
 		{
-			nd m = this;
-			while (m->left)
+			node_pointer m = this;
+			while (m->left != tree_null)
 				m = m->left;
 			return (m);
 		}
 
-		nd	maximum( void )
+		node_pointer	maximum( void )
 		{
-			nd m = this;
+			node_pointer m = this;
 
-			while (m->right)
+			while (m->right != tree_null)
 				m = m->right;
 			return (m);
 		}
 
-		nd predecessor(nd n)
+		node_pointer successor( void )
 		{
-			nd s = NULL;
-			if (n->left)
+			return (successor(this));
+		}
+
+		node_pointer predecessor( void )
+		{
+			return (predecessor(this));
+		}
+
+		node_pointer predecessor(node_pointer n)
+		{
+			node_pointer s = NULL;
+			if (n->left != tree_null)
 				return (n->left->minimum());
 			s = n->p;
-			while(s && n == s->left)
+			while(s != tree_null && n == s->left)
 			{
 				n = s;
 				s = s->p;
@@ -106,13 +130,13 @@ class	node {
 			return (s);
 		}
 
-		nd successor(nd n)
+		node_pointer successor(node_pointer n)
 		{
-			nd s = NULL;
-			if (n->right)
+			node_pointer s = NULL;
+			if (n->right != tree_null)
 				return (n->right->minimum());
 			s = n->p;
-			while(s && n == s->right)
+			while(s !=tree_null && n == s->right)
 			{
 				n = s;
 				s = s->p;
@@ -123,10 +147,11 @@ class	node {
 
 		//pub_var{
 		bool	color;
-		nd		p;
-		nd		left;
-		nd		right;
-		value_type	key;
+		node_pointer		tree_null;
+		node_pointer		p;
+		node_pointer		left;
+		node_pointer		right;
+		value_type			key;
 		//pub_var - END}
 
 	private:

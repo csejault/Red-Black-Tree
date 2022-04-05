@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/04 12:11:47 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/05 16:24:52 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -32,6 +32,8 @@
 # include <iostream>
 # include <memory>
 # include "node.hpp"
+# include "rbt_iterator.hpp"
+
 template < class T >
 class node;
 //define - END}
@@ -43,10 +45,14 @@ class	rbt {
 			BLACK = 0,
 			RED
 		};
-		typedef Allocator	allocator_type;
-		typedef	typename node<T>::node_type		node_type;
-		typedef	typename node<T>::nd			nd;
-		typedef	typename node<T>::value_type	value_type;
+		typedef	T										value_type;
+		typedef	value_type *							pointer;
+		typedef	value_type &							reference;
+		typedef Allocator								allocator_type;
+		typedef	typename node<T>::node_type				node_type;
+		typedef	typename node<T>::node_pointer			node_pointer;
+		typedef typename rbt_iterator<T>::iterator		iterator;
+
 		//pub_constructor{
 		rbt(const allocator_type& alloc_arg = allocator_type()) : _alloc(alloc_arg)  {
 			t_null = create_node(node_type(0));
@@ -86,15 +92,15 @@ class	rbt {
 		//pub_exception - END}
 
 		//pub_fct{
-		void	delete_node(nd to_dell)
+		void	delete_node(node_pointer to_dell)
 		{
 			_alloc.destroy(to_dell);
 			_alloc.deallocate(to_dell, 1);
 		}
 
-		nd	create_node(node_type	value)
+		node_pointer	create_node(node_type	value)
 		{
-			nd	ret;
+			node_pointer	ret;
 			ret = _alloc.allocate(1);
 			_alloc.construct(ret, value);
 			return (ret);
@@ -102,11 +108,11 @@ class	rbt {
 
 		void	add_node(value_type k)
 		{
-			nd n = create_node(node_type(&t_null,k));
+			node_pointer n = create_node(node_type(t_null,k));
 			t_insert(n);
 		}
 
-		void	delete_tree( nd p )
+		void	delete_tree( node_pointer p )
 		{
 			if (p != t_null)
 			{
@@ -121,7 +127,7 @@ class	rbt {
 			inorder_walk(root);
 		}
 
-		void	inorder_walk( nd p )
+		void	inorder_walk( node_pointer p )
 		{
 			if (p != t_null)
 			{
@@ -131,12 +137,12 @@ class	rbt {
 			}
 		}
 
-		nd	search(value_type k)
+		node_pointer	search(value_type k)
 		{
 			return (search(root,k));
 		}
 
-		nd	search(nd n, value_type k)
+		node_pointer	search(node_pointer n, value_type k)
 		{
 			if (n == t_null || n->key == k)
 				return (n);
@@ -146,12 +152,12 @@ class	rbt {
 				return (search(n->right, k));
 		}
 
-		nd	iterative_search(value_type k)
+		node_pointer	iterative_search(value_type k)
 		{
 			return(iterative_search(root,k));
 		}
 
-		nd	iterative_search(nd n, value_type k)
+		node_pointer	iterative_search(node_pointer n, value_type k)
 		{
 			while (n != t_null && k != n->key)
 			{
@@ -163,11 +169,11 @@ class	rbt {
 			return (n);
 		}
 
-		void	left_rotate(nd x)
+		void	left_rotate(node_pointer x)
 		{
 			if (x->right == t_null)
 				throw (rotate_on_t_null());
-			nd y = x->right;
+			node_pointer y = x->right;
 			x->right = y->left;
 			if (y->left != t_null)
 				y->left->p = x;
@@ -182,11 +188,11 @@ class	rbt {
 			x->p = y;
 		}
 
-		void	right_rotate(nd y)
+		void	right_rotate(node_pointer y)
 		{
 			if (y->left == t_null)
 				throw (rotate_on_t_null());
-			nd x = y->left;
+			node_pointer x = y->left;
 			y->left = x->right;
 			if (x->right != t_null)
 				x->right->p = y;
@@ -202,10 +208,10 @@ class	rbt {
 		}
 
 
-		void	t_insert(nd z)
+		void	t_insert(node_pointer z)
 		{
-			nd y = t_null;
-			nd x = root;
+			node_pointer y = t_null;
+			node_pointer x = root;
 			while (x != t_null)
 			{
 				y = x;
@@ -224,9 +230,9 @@ class	rbt {
 			t_insert_fixup(z);
 		}
 
-		void	t_insert_fixup(nd z)
+		void	t_insert_fixup(node_pointer z)
 		{
-			nd uncle = t_null;
+			node_pointer uncle = t_null;
 			//z is red at the begining
 			while (z->p->color == RED)
 			{
@@ -292,7 +298,7 @@ class	rbt {
 			root->color = BLACK;
 		}
 
-		void transplant(nd u, nd v)
+		void transplant(node_pointer u, node_pointer v)
 		{
 			if (u->p == t_null)
 				root = v;
@@ -303,10 +309,10 @@ class	rbt {
 			v->p = u->p;
 		}
 
-		void	t_delete(nd z)
+		void	t_delete(node_pointer z)
 		{
-			nd y = z;
-			nd x = NULL;
+			node_pointer y = z;
+			node_pointer x = NULL;
 			bool y_original_color = y->color;
 			if (z->left == t_null)
 			{
@@ -341,9 +347,9 @@ class	rbt {
 			delete_node(z);
 		}
 
-		void	t_delete_fixup(nd x)
+		void	t_delete_fixup(node_pointer x)
 		{
-			nd w = NULL;
+			node_pointer w = NULL;
 			while (x != root && x->color == BLACK)
 			{
 				if (x == x->p->left)
@@ -429,8 +435,8 @@ class	rbt {
 
 		//priv_var{
 		allocator_type	_alloc;
-		nd				t_null;
-		nd				root;
+		node_pointer				t_null;
+		node_pointer				root;
 		//priv_var - END}
 };
 
