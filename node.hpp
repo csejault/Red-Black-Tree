@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/05 19:18:04 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:02:36 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -40,31 +40,48 @@ class	node {
 		};
 
 		//pub_constructor{
-		node( void ) : color(BLACK), p(NULL), left(NULL), right(NULL) {} //used to create t_null -- unitisialized key
-		node(node_pointer& t_null, value_type k) :color(RED), tree_null(t_null), p(t_null), left(t_null), right(t_null), key(k) {} //used to create node
-		~node( void ) {
-		}
+		//node( void ) : color(BLACK), p(NULL), left(NULL), right(NULL) {} //used to create t_null -- unitisialized data
+		node(node_pointer& t_null, value_type k) :color(RED), tree_null(t_null), p(t_null), left(t_null), right(t_null), data(k) {} //used to create node
+
+		node(bool c, node_pointer t_null,  node_pointer parent, node_pointer left_node, node_pointer right_node, value_type dt) : color(c), tree_null(t_null), p(parent), left(left_node), right(right_node), data(dt) {} //used to create node
+
+		//node(const node& cpy) { *this = cpy; }
+		~node( void ) {}
 		//pub_constructor - END}
 
 		//pub_operator{
+		//node&	operator=(const node& x)
+		//{
+		//	if (this != &x)
+		//	{
+		//		color = x.color;
+		//		tree_null = x.tree_null;
+		//		p = x.p;
+		//		left = x.left;
+		//		right = x.right;
+		//		//data = x.data;
+		//	}
+		//	return (*this);
+		//}
+
 		pointer	operator->( void )
 		{
-			return (&key);
+			return (&data);
 		}
 
 		const_pointer	operator->( void ) const
 		{
-			return (&key);
+			return (&data);
 		}
 
 		reference	operator*( void )
 		{
-			return (key);
+			return (data);
 		}
 
 		const_reference	operator*( void ) const
 		{
-			return (key);
+			return (data);
 		}
 
 		//pub_operator - END}
@@ -85,8 +102,8 @@ class	node {
 		//pub_exception - END}
 
 		//pub_fct{
-		void	print_key( void ) {
-			std::cout << key.first << " = " << key.second << std::endl;
+		void	print_data( void ) {
+			std::cout << data.first << " = " << data.second << std::endl;
 		}
 
 		node_pointer	minimum( void )
@@ -149,7 +166,7 @@ class	node {
 		node_pointer		p;
 		node_pointer		left;
 		node_pointer		right;
-		value_type			key;
+		value_type			data;
 		//pub_var - END}
 
 	private:

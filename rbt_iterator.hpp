@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 12:03:05 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/05 18:54:49 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/08 14:23:59 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,20 @@ class	rbt_iterator
 		typedef const value_type *							const_pointer;
 		typedef const value_type &							const_reference;
 		typedef std::bidirectional_iterator_tag 			iterator_category;
-		//typedef std::ptrdiff_t								difference_type;
-		typedef	typename node<T>::node_type					node_type;
-		typedef	typename node<T>::node_pointer				node_pointer;
+		typedef std::ptrdiff_t								difference_type;
+		typedef	typename node<value_type>::node_type					node_type;
+		typedef	typename node<value_type>::node_pointer				node_pointer;
 		//typedef	typename node<T>::node_reference			node_reference;
 		//typedef	typename node<T>::const_node_pointer		const_node_pointer;
 		//typedef	typename node<T>::const_node_reference		const_node_reference;
-		typedef rbt_iterator<T>								iterator;
+		typedef rbt_iterator<value_type>								iterator;
+		typedef const rbt_iterator<value_type>								const_iterator;
+		//typedef rbt_iterator<node_type>								iterator;
+		//typedef const rbt_iterator<node_type>				const_iterator;
 
 		rbt_iterator( node_pointer nd ) :_ptr(nd) {}
-		rbt_iterator( rbt_iterator &to_cpy ) : _ptr(to_cpy._ptr) {}
-		rbt_iterator & operator=( const rbt_iterator& asign ) { if (&asign != this)_ptr = asign._ptr; }
+		rbt_iterator( const rbt_iterator &to_cpy ) : _ptr(to_cpy._ptr) {}
+		rbt_iterator & operator=( const rbt_iterator& asign ) { if (&asign != this)_ptr = asign._ptr; return *this;}
 		~rbt_iterator( void ) {}
 
 		bool	operator==(const rbt_iterator & rhs)
@@ -103,8 +106,8 @@ class	rbt_iterator
 			return (_ptr != rhs._ptr);
 		}
 
-			private:
-			node_pointer _ptr;
-		};
+	private:
+		node_pointer _ptr;
+};
 
 #endif
