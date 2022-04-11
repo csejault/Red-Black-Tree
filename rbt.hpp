@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/08 17:10:37 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/11 17:01:23 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -38,7 +38,7 @@ template < class T >
 class node;
 //define - END}
 
-template < class T, class Allocator, class Compare = std::less< node<T> > >
+template < class T, class Allocator = std::allocator< node<T> >, class Compare = std::less< node<T> > >
 class	rbt {
 	public:
 		enum	t_color {
@@ -54,12 +54,18 @@ class	rbt {
 		typedef typename rbt_iterator<value_type>::iterator			iterator;
 		typedef typename rbt_iterator<value_type>::const_iterator	const_iterator;
 		typedef size_t												size_type;
-		typedef typename Allocator::template rebind< node_type>::other											allocator_type;
+		//typedef typename std::allocator<node_type>				allocator_type;
+		//typedef typename Allocator::template rebind< node_type>::other											allocator_type;
+		typedef Allocator											allocator_type;
 
 		//pub_constructor{
 		rbt(const allocator_type& alloc_arg = allocator_type()) : _alloc(alloc_arg)  {
 			_size = 0;
 			t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type()));
+			//t_null->tree_null = t_null;
+			//t_null->p = t_null;
+			//t_null->left = t_null;
+			//t_null->right = t_null;
 			root = t_null;
 		}
 
@@ -67,6 +73,10 @@ class	rbt {
 	{
 		_size = 0;
 		t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type()));
+		//t_null->tree_null = t_null;
+		//t_null->p = t_null;
+		//t_null->left = t_null;
+		//t_null->right = t_null;
 		root = t_null;
 		*this = cpy;
 	}
@@ -77,11 +87,9 @@ class	rbt {
 			{
 				if (root != t_null)
 					delete_tree(root);
-				deallocate_node(t_null);
-				t_null = rhs.t_null;
-				root = t_null;
 				_alloc = rhs._alloc;
-				for (iterator it = iterator(rhs.minimum()); it != iterator(t_null); it++)
+				root = t_null;
+				for (iterator it = iterator(rhs.minimum()); it != iterator(rhs.t_null); it++)
 					insert_node(*it);
 
 			}
@@ -154,8 +162,7 @@ class	rbt {
 
 		node_pointer	create_node(node_type	n)
 		{
-			node_pointer	ret;
-			ret = _alloc.allocate(1);
+			node_pointer	ret = _alloc.allocate(1);
 			_alloc.construct(ret, n);
 			return (ret);
 		}
