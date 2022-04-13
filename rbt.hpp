@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/11 17:01:23 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/13 18:53:37 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -38,7 +38,7 @@ template < class T >
 class node;
 //define - END}
 
-template < class T, class Allocator = std::allocator< node<T> >, class Compare = std::less< node<T> > >
+template < class T, class Allocator = std::allocator< node<T> >, class Compare = std::less< T > >
 class	rbt {
 	public:
 		enum	t_color {
@@ -59,37 +59,20 @@ class	rbt {
 		typedef Allocator											allocator_type;
 
 		//pub_constructor{
-		rbt(const allocator_type& alloc_arg = allocator_type()) : _alloc(alloc_arg)  {
-			_size = 0;
-			t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type()));
-			//t_null->tree_null = t_null;
-			//t_null->p = t_null;
-			//t_null->left = t_null;
-			//t_null->right = t_null;
-			root = t_null;
-		}
+		rbt(const allocator_type& alloc_arg = allocator_type(), const compare_type& compare_arg = compare_type()) : _size(0), _alloc(alloc_arg), _comp(compare_arg), _t_null(_alloc_t_null()), root(_t_null)  { }
 
-		rbt(const rbt& cpy) : _alloc(cpy._alloc), t_null(NULL), root(NULL), _size(0)
-	{
-		_size = 0;
-		t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type()));
-		//t_null->tree_null = t_null;
-		//t_null->p = t_null;
-		//t_null->left = t_null;
-		//t_null->right = t_null;
-		root = t_null;
-		*this = cpy;
-	}
+		rbt(const rbt& cpy) : _size(cpy._size), _alloc(cpy._alloc), _comp(cpy._comp), _t_null(_alloc_t_null()), root(_t_null) { *this = cpy; }
 
 		rbt&	operator=(const rbt& rhs)
 		{
 			if (this != &rhs)
 			{
-				if (root != t_null)
+				if (root != _t_null)
 					delete_tree(root);
+				_comp = rhs._comp;
 				_alloc = rhs._alloc;
-				root = t_null;
-				for (iterator it = iterator(rhs.minimum()); it != iterator(rhs.t_null); it++)
+				root = _t_null;
+				for (iterator it = iterator(rhs.minimum()); it != iterator(rhs._t_null); it++)
 					insert_node(*it);
 
 			}
@@ -98,9 +81,9 @@ class	rbt {
 
 		~rbt( void )
 		{ 
-			if (root != t_null)
+			if (root != _t_null)
 				delete_tree(root);
-			deallocate_node(t_null);
+			deallocate_node(_t_null);
 		}
 
 		//pub_constructor - END}
@@ -125,7 +108,7 @@ class	rbt {
 
 		node_pointer	get_t_null( void )
 		{
-			return (t_null);
+			return (_t_null);
 		}
 
 		//pub_getter - END}
@@ -154,7 +137,7 @@ class	rbt {
 			return(root->maximum());
 		}
 
-		void	deallocate_node(node_pointer& to_dell)
+		void	deallocate_node(node_pointer to_dell)
 		{
 			_alloc.destroy(to_dell);
 			_alloc.deallocate(to_dell, 1);
@@ -169,7 +152,7 @@ class	rbt {
 
 		node_pointer	insert_node(value_type k)
 		{
-			node_pointer n = create_node(node_type(t_null,k));
+			node_pointer n = create_node(node_type(_t_null,k));
 			t_insert(n);
 			_size++;
 			return(n);
@@ -178,7 +161,7 @@ class	rbt {
 		void	delete_node(value_type k)
 		{
 			node_pointer n = search(root,k);
-			if (n != t_null)
+			if (n != _t_null)
 			{
 				t_delete(n);
 				deallocate_node(n);
@@ -188,7 +171,7 @@ class	rbt {
 
 		void	delete_tree( node_pointer p )
 		{
-			if (p != t_null)
+			if (p != _t_null)
 			{
 				delete_tree(p->left);
 				delete_tree(p->right);
@@ -203,7 +186,7 @@ class	rbt {
 
 		void	inorder_walk( node_pointer p )
 		{
-			if (p != t_null)
+			if (p != _t_null)
 			{
 				inorder_walk(p->left);
 				p->print_data();
@@ -211,16 +194,16 @@ class	rbt {
 			}
 		}
 
-		node_pointer	search(value_type k)
+		node_pointer&	search(const value_type& k) 
 		{
 			return (search(root,k));
 		}
 
-		node_pointer	search(node_pointer n, value_type k)
+		node_pointer&	search(node_pointer& n, const value_type& k)
 		{
-			if (n == t_null || n->data == k)
+			if (n == _t_null || _is_equal(n->data, k)) 
 				return (n);
-			if (k < n->data)
+			if (_comp(k, n->data))
 				return (search(n->left, k));
 			else
 				return (search(n->right, k));
@@ -233,9 +216,9 @@ class	rbt {
 
 		node_pointer	iterative_search(node_pointer n, value_type k)
 		{
-			while (n != t_null && k != n->data)
+			while (n != _t_null && !_is_equal(k, n->data))
 			{
-				if (k < n->data)
+				if (_comp(k,n->data))
 					n = n->left;
 				else
 					n = n->right;
@@ -245,14 +228,14 @@ class	rbt {
 
 		void	left_rotate(node_pointer x)
 		{
-			if (x->right == t_null)
+			if (x->right == _t_null)
 				throw (rotate_on_t_null());
 			node_pointer y = x->right;
 			x->right = y->left;
-			if (y->left != t_null)
+			if (y->left != _t_null)
 				y->left->p = x;
 			y->p = x->p;	
-			if (x->p == t_null)
+			if (x->p == _t_null)
 				root = y;
 			else if (x == x->p->left)
 				x->p->left = y;
@@ -264,14 +247,14 @@ class	rbt {
 
 		void	right_rotate(node_pointer y)
 		{
-			if (y->left == t_null)
+			if (y->left == _t_null)
 				throw (rotate_on_t_null());
 			node_pointer x = y->left;
 			y->left = x->right;
-			if (x->right != t_null)
+			if (x->right != _t_null)
 				x->right->p = y;
 			x->p = y->p;	
-			if (y->p == t_null)
+			if (y->p == _t_null)
 				root = x;
 			else if (y == y->p->left)
 				y->p->left = x;
@@ -284,9 +267,9 @@ class	rbt {
 
 		void	t_insert(node_pointer z)
 		{
-			node_pointer y = t_null;
+			node_pointer y = _t_null;
 			node_pointer x = root;
-			while (x != t_null)
+			while (x != _t_null)
 			{
 				y = x;
 				if (z->data < x->data)
@@ -295,7 +278,7 @@ class	rbt {
 					x = x->right;
 			}
 			z->p = y;
-			if (y == t_null)
+			if (y == _t_null)
 				root = z;
 			else if (z->data < y->data)
 				y->left = z;
@@ -306,7 +289,7 @@ class	rbt {
 
 		void	t_insert_fixup(node_pointer z)
 		{
-			node_pointer uncle = t_null;
+			node_pointer uncle = _t_null;
 			//z is red at the begining
 			while (z->p->color == RED)
 			{
@@ -374,7 +357,7 @@ class	rbt {
 
 		void transplant(node_pointer u, node_pointer v)
 		{
-			if (u->p == t_null)
+			if (u->p == _t_null)
 				root = v;
 			else if (u == u->p->left)
 				u->p->left = v;
@@ -386,15 +369,15 @@ class	rbt {
 		void	t_delete(node_pointer z)
 		{
 			node_pointer y = z;
-			node_pointer x = t_null;
+			node_pointer x = _t_null;
 			//node_pointer x = NULL;
 			bool y_original_color = y->color;
-			if (z->left == t_null)
+			if (z->left == _t_null)
 			{
 				x = z->right;
 				transplant(z,z->right);
 			}
-			else if (z->right == t_null)
+			else if (z->right == _t_null)
 			{
 				x = z->left;
 				transplant(z,z->left);
@@ -423,7 +406,7 @@ class	rbt {
 
 		void	t_delete_fixup(node_pointer x)
 		{
-			node_pointer w = t_null;
+			node_pointer w = _t_null;
 			//node_pointer w = NULL;
 			while (x != root && x->color == BLACK)
 			{
@@ -499,6 +482,19 @@ class	rbt {
 		//pub_var - END}
 
 	private:
+
+		bool _is_equal(const value_type& x , const value_type& y) const 
+		{
+			if (_comp(x, y) || _comp(y, x))
+				return (false);
+			else
+				return (true);
+		}
+
+		node_pointer &	_alloc_t_null( void )
+		{
+			return( _t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type())));
+		}
 		//priv_debug{
 		//priv_debug - END}
 
@@ -509,10 +505,11 @@ class	rbt {
 		//priv_static - END}
 
 		//priv_var{
-		allocator_type	_alloc;
-		node_pointer	t_null;
-		node_pointer	root;
 		size_type		_size;
+		allocator_type	_alloc;
+		compare_type	_comp;
+		node_pointer	_t_null;
+		node_pointer	root;
 		//priv_var - END}
 };
 

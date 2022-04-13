@@ -44,7 +44,8 @@ class	node {
 
 		node(bool c, node_pointer t_null,  node_pointer parent, node_pointer left_node, node_pointer right_node, value_type dt) : color(c), tree_null(t_null), p(parent), left(left_node), right(right_node), data(dt) {} //used to create node
 
-		node(const node& cpy) : tree_null(NULL), p(NULL), left(NULL), right(NULL){ *this = cpy; }
+		node(const node& cpy) : color(cpy.color), tree_null(cpy.tree_null), p(cpy.p), left(cpy.left), right(cpy.right), data(cpy.data){ }
+
 		~node( void ) {}
 		//pub_constructor - END}
 
@@ -53,13 +54,12 @@ class	node {
 			{
 				if (this != &x)
 				{
-//					return(node_type(x.color, x.tree_null, x.p, x.left, x.right, x.data));
 					color = x.color;
 					tree_null = x.tree_null;
 					p = x.p;
 					left = x.left;
 					right = x.right;
-					//data = x.data;
+					data = x.data;
 				}
 				return (*this);
 			}
