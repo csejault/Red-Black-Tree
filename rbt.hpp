@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/13 18:53:37 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/14 12:43:20 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -61,7 +61,7 @@ class	rbt {
 		//pub_constructor{
 		rbt(const allocator_type& alloc_arg = allocator_type(), const compare_type& compare_arg = compare_type()) : _size(0), _alloc(alloc_arg), _comp(compare_arg), _t_null(_alloc_t_null()), root(_t_null)  { }
 
-		rbt(const rbt& cpy) : _size(cpy._size), _alloc(cpy._alloc), _comp(cpy._comp), _t_null(_alloc_t_null()), root(_t_null) { *this = cpy; }
+		rbt(const rbt& cpy) : _size(0), _alloc(cpy._alloc), _comp(cpy._comp), _t_null(_alloc_t_null()), root(_t_null) { *this = cpy; }
 
 		rbt&	operator=(const rbt& rhs)
 		{
@@ -111,6 +111,10 @@ class	rbt {
 			return (_t_null);
 		}
 
+		node_pointer	get_root( void )
+		{
+			return (root);
+		}
 		//pub_getter - END}
 
 		//pub_setter{
@@ -176,7 +180,9 @@ class	rbt {
 				delete_tree(p->left);
 				delete_tree(p->right);
 				deallocate_node(p);
+				_size--;
 			}
+				root = _t_null;
 		}
 
 		void	inorder_walk( void )
