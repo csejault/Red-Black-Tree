@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/14 12:43:20 by csejault         ###   ########.fr       */
+/*   Updated: 2022/04/15 17:47:47 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -182,7 +182,7 @@ class	rbt {
 				deallocate_node(p);
 				_size--;
 			}
-				root = _t_null;
+			root = _t_null;
 		}
 
 		void	inorder_walk( void )
@@ -278,7 +278,7 @@ class	rbt {
 			while (x != _t_null)
 			{
 				y = x;
-				if (z->data < x->data)
+				if (_comp(z->data, x->data))
 					x = x->left;
 				else
 					x = x->right;
@@ -286,14 +286,14 @@ class	rbt {
 			z->p = y;
 			if (y == _t_null)
 				root = z;
-			else if (z->data < y->data)
+			else if (_comp(z->data, y->data))
 				y->left = z;
 			else
 				y->right = z;
 			t_insert_fixup(z);
 		}
 
-		void	t_insert_fixup(node_pointer z)
+		void	t_insert_fixup(node_pointer& z)
 		{
 			node_pointer uncle = _t_null;
 			//z is red at the begining
@@ -482,6 +482,38 @@ class	rbt {
 			x->color = BLACK;
 		}
 
+		iterator	lower_bound(value_type vt) const
+		{
+			iterator end = iterator(_t_null);
+			iterator it = minimum();
+			while (it != end)
+			{
+				if (!_comp(*it, vt))
+					break;
+				it++;
+			}
+			return (it);
+		}
+
+		iterator	upper_bound(value_type vt) const
+		{
+			iterator end = iterator(_t_null);
+			iterator it = minimum();
+			while (it != end)
+			{
+				if (_comp(vt, *it))
+					break;
+				it++;
+			}
+			return (it);
+		}
+
+		ft::pair<iterator,iterator>	equal_range(value_type vt) const
+		{
+			return (ft::make_pair(lower_bound(vt),upper_bound(vt)));
+		}
+
+
 		//pub_fct - END}
 
 		//pub_var{
@@ -501,6 +533,7 @@ class	rbt {
 		{
 			return( _t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type())));
 		}
+
 		//priv_debug{
 		//priv_debug - END}
 
