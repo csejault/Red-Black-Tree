@@ -128,12 +128,12 @@ class	node {
 			return (successor(this));
 		}
 
-		node_pointer predecessor( void )
+		node_pointer predecessor( void ) 
 		{
 			return (predecessor(this));
 		}
 
-		node_pointer predecessor(node_pointer n)
+		node_pointer predecessor(node_pointer n) 
 		{
 			if (n->left != tree_null)
 				return (n->left->maximum());
@@ -146,7 +146,7 @@ class	node {
 			return (s);
 		}
 
-		node_pointer successor(node_pointer n)
+		node_pointer successor(node_pointer n) 
 		{
 			if (n->right != tree_null)
 				return (n->right->minimum());

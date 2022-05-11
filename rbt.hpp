@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/03 12:50:03 by csejault          #+#    #+#             */
-/*   Updated: 2022/04/20 15:14:18 by csejault         ###   ########.fr       */
+/*   Updated: 2022/05/11 16:38:32 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 //SOURCES :	Introduction to Algorithms : Thomas H. Cormen - Charles E. Leiserson - Ronald L. Rivest - Clifford Stein
@@ -51,8 +51,8 @@ class	rbt {
 		typedef Compare															compare_type;
 		typedef	typename node<value_type>::node_type							node_type;
 		typedef	typename node<value_type>::node_pointer							node_pointer;
-		typedef rbt_iterator<value_type, node_type>					iterator;
-		typedef rbt_iterator<const value_type, node_type>				const_iterator;
+		typedef rbt_iterator<value_type, node_type>								iterator;
+		typedef rbt_iterator<const value_type, node_type>						const_iterator;
 		typedef size_t															size_type;
 		typedef Allocator														allocator_type;
 
@@ -98,18 +98,17 @@ class	rbt {
 
 		//pub_getter{
 
-		size_type	size( void )
+		size_type	size( void ) const
 		{
-			//-1 because t_null is created by create node
 			return (_size);
 		}
 
-		node_pointer	get_t_null( void )
+		node_pointer	get_t_null( void ) const
 		{
 			return (_t_null);
 		}
 
-		node_pointer	get_root( void )
+		node_pointer	get_root( void ) const
 		{
 			return (_root);
 		}
@@ -183,12 +182,12 @@ class	rbt {
 			_root = _t_null;
 		}
 
-		void	inorder_walk( void )
+		void	inorder_walk( void ) const
 		{
 			inorder_walk(_root);
 		}
 
-		void	inorder_walk( node_pointer p )
+		void	inorder_walk( node_pointer p ) const
 		{
 			if (p != _t_null)
 			{
@@ -201,8 +200,6 @@ class	rbt {
 		node_pointer&	search(const value_type& k) 
 		{
 			node_pointer & n = search(_root,k);
-//			if (n == _t_null)
-//				std::cout << "n = tnull" << std::endl;
 			return (n);
 		}
 
@@ -216,12 +213,12 @@ class	rbt {
 				return (search(n->right, k));
 		}
 
-		node_pointer	iterative_search(const value_type k)
+		node_pointer	iterative_search(const value_type k) const
 		{
 			return(iterative_search(_root,k));
 		}
 
-		node_pointer	iterative_search(node_pointer n, const value_type k)
+		node_pointer	iterative_search(node_pointer n, const value_type k) const 
 		{
 			while (n != _t_null && !_is_equal(k, n->data))
 			{
@@ -377,7 +374,6 @@ class	rbt {
 		{
 			node_pointer y = z;
 			node_pointer x = _t_null;
-			//node_pointer x = NULL;
 			bool y_original_color = y->color;
 			if (z->left == _t_null)
 			{
@@ -408,13 +404,11 @@ class	rbt {
 				if (y_original_color == BLACK)
 					t_delete_fixup(x);
 			}
-			//?
 		}
 
 		void	t_delete_fixup(node_pointer x)
 		{
 			node_pointer w = _t_null;
-			//node_pointer w = NULL;
 			while (x != _root && x->color == BLACK)
 			{
 				if (x == x->p->left)
@@ -532,7 +526,6 @@ class	rbt {
 
 		node_pointer &	_alloc_t_null( void )
 		{
-			//_t_null = create_node(node_type(BLACK, _t_null, _t_null, _t_null, _t_null, value_type()));
 			_t_null = create_node(node_type(BLACK, NULL,  NULL, NULL, NULL, value_type()));
 			_t_null->p = _t_null;
 			_t_null->left = _t_null;
