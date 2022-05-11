@@ -50,137 +50,137 @@ class	node {
 		//pub_constructor - END}
 
 		//pub_operator{
-			node&	operator=(const node& x)
+		node&	operator=(const node& x)
+		{
+			if (this != &x)
 			{
-				if (this != &x)
-				{
-					color = x.color;
-					tree_null = x.tree_null;
-					p = x.p;
-					left = x.left;
-					right = x.right;
-					data = x.data;
-				}
-				return (*this);
+				color = x.color;
+				tree_null = x.tree_null;
+				p = x.p;
+				left = x.left;
+				right = x.right;
+				data = x.data;
 			}
+			return (*this);
+		}
 
-			pointer	operator->( void )
+		pointer	operator->( void )
+		{
+			return (&data);
+		}
+
+		const_pointer	operator->( void ) const
+		{
+			return (&data);
+		}
+
+		reference	operator*( void )
+		{
+			return (data);
+		}
+
+		const_reference	operator*( void ) const
+		{
+			return (data);
+		}
+
+		//pub_operator - END}
+
+		//pub_debug{
+		//pub_debug - END}
+
+		//pub_static{
+		//pub_static - END}
+
+		//pub_getter{
+		//pub_getter - END}
+
+		//pub_setter{
+		//pub_setter - END}
+
+		//pub_exception{
+		//pub_exception - END}
+
+		//pub_fct{
+		void	print_data( void ) {
+			std::cout << data.first << " = " << data.second << std::endl;
+		}
+
+		node_pointer	minimum( void )
+		{
+			node_pointer m = this;
+			while (m->left != tree_null)
+				m = m->left;
+			return (m);
+		}
+
+		node_pointer	maximum( void )
+		{
+			node_pointer m = this;
+
+			while (m->right != tree_null)
+				m = m->right;
+			return (m);
+		}
+
+		node_pointer successor( void )
+		{
+			return (successor(this));
+		}
+
+		node_pointer predecessor( void )
+		{
+			return (predecessor(this));
+		}
+
+		node_pointer predecessor(node_pointer n)
+		{
+			if (n->left != tree_null)
+				return (n->left->maximum());
+			node_pointer s = n->p;
+			while(s != tree_null && n == s->left)
 			{
-				return (&data);
+				n = s;
+				s = s->p;
 			}
+			return (s);
+		}
 
-			const_pointer	operator->( void ) const
+		node_pointer successor(node_pointer n)
+		{
+			if (n->right != tree_null)
+				return (n->right->minimum());
+			node_pointer s = n->p;
+			while(s !=tree_null && n == s->right)
 			{
-				return (&data);
+				n = s;
+				s = s->p;
 			}
+			return (s);
+		}
+		//pub_fct - END}
 
-			reference	operator*( void )
-			{
-				return (data);
-			}
-
-			const_reference	operator*( void ) const
-			{
-				return (data);
-			}
-
-			//pub_operator - END}
-
-			//pub_debug{
-			//pub_debug - END}
-
-			//pub_static{
-			//pub_static - END}
-
-			//pub_getter{
-			//pub_getter - END}
-
-			//pub_setter{
-			//pub_setter - END}
-
-			//pub_exception{
-			//pub_exception - END}
-
-			//pub_fct{
-			void	print_data( void ) {
-				std::cout << data.first << " = " << data.second << std::endl;
-			}
-
-			node_pointer	minimum( void )
-			{
-				node_pointer m = this;
-				while (m->left != tree_null)
-					m = m->left;
-				return (m);
-			}
-
-			node_pointer	maximum( void )
-			{
-				node_pointer m = this;
-
-				while (m->right != tree_null)
-					m = m->right;
-				return (m);
-			}
-
-			node_pointer successor( void )
-			{
-				return (successor(this));
-			}
-
-			node_pointer predecessor( void )
-			{
-				return (predecessor(this));
-			}
-
-			node_pointer predecessor(node_pointer n)
-			{
-				if (n->left != tree_null)
-					return (n->left->minimum());
-				node_pointer s = n->p;
-				while(s != tree_null && n == s->left)
-				{
-					n = s;
-					s = s->p;
-				}
-				return (s);
-			}
-
-			node_pointer successor(node_pointer n)
-			{
-				if (n->right != tree_null)
-					return (n->right->minimum());
-				node_pointer s = n->p;
-				while(s !=tree_null && n == s->right)
-				{
-					n = s;
-					s = s->p;
-				}
-				return (s);
-			}
-			//pub_fct - END}
-
-			//pub_var{
-			bool	color;
-			node_pointer		tree_null;
-			node_pointer		p;
-			node_pointer		left;
-			node_pointer		right;
-			value_type			data;
-			//pub_var - END}
+		//pub_var{
+		bool	color;
+		node_pointer		tree_null;
+		node_pointer		p;
+		node_pointer		left;
+		node_pointer		right;
+		value_type			data;
+		//pub_var - END}
 
 	private:
-			//priv_debug{
-			//priv_debug - END}
+		//priv_debug{
+		//priv_debug - END}
 
-			//priv_constructor{
-			//priv_constructor - END}
+		//priv_constructor{
+		//priv_constructor - END}
 
-			//priv_static{
-			//priv_static - END}
+		//priv_static{
+		//priv_static - END}
 
-			//priv_var{
-			//priv_var - END}
+		//priv_var{
+		//priv_var - END}
 };
 
 //out_class{
